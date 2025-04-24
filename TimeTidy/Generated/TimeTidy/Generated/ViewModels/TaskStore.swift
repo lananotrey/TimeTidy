@@ -1,40 +1,40 @@
 import Foundation
 
-class TaskStore: ObservableObject {
-    @Published var tasks: [Task] = []
-    private let tasksKey = "savedTasks"
+struct Task: Identifiable, Codable {
+    var id: UUID
+    var title: String
+    var description: String
+    var priority: TaskPriority
+    var dueDate: Date
+    var isCompleted: Bool
     
-    init() {
-        loadTasks()
+    init(id: UUID = UUID(), title: String, description: String, priority: TaskPriority, dueDate: Date, isCompleted: Bool = false) {
+        self.id = id
+        self.title = title
+        self.description = description
+        self.priority = priority
+        self.dueDate = dueDate
+        self.isCompleted = isCompleted
     }
+}
+
+enum TaskPriority: String, Codable, CaseIterable {
+    case low = "Low"
+    case medium = "Medium"
+    case high = "High"
     
-    func addTask(_ task: Task) {
-        tasks.append(task)
-        saveTasks()
-    }
-    
-    func updateTask(_ task: Task) {
-        if let index = tasks.firstIndex(where: { $0.id == task.id }) {
-            tasks[index] = task
-            saveTasks()
+    var color: String {
+        switch self {
+        case .low: return "PriorityLow"
+        case .medium: return "PriorityMedium"
+        case .high: return "PriorityHigh"
         }
     }
-    
-    func deleteTask(_ task: Task) {
-        tasks.removeAll { $0.id == task.id }
-        saveTasks()
-    }
-    
-    private func saveTasks() {
-        if let encoded = try? JSONEncoder().encode(tasks) {
-            UserDefaults.standard.set(encoded, forKey: tasksKey)
-        }
-    }
-    
-    private func loadTasks() {
-        if let data = UserDefaults.standard.data(forKey: tasksKey),
-           let decoded = try? JSONDecoder().decode([Task].self, from: data) {
-            tasks = decoded
-        }
-    }
+}
+
+enum TaskFilter: String, CaseIterable {
+    case all = "All"
+    case today = "Today"
+    case upcoming = "Upcoming"
+    case completed = "Completed"
 }

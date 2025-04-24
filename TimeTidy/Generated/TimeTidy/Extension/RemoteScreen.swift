@@ -61,31 +61,28 @@ struct RemoteScreenView: View {
             remoteViewModel.redirectLink = LocalStorage.shared.savedLink
             remoteViewModel.currentState = .service
         } else if LocalStorage.shared.isFirstLaunch {
-            processFirstLaunchAsync()
+            Task {
+                await processFirstLaunch()
+            }
         } else {
             remoteViewModel.currentState = .main
         }
     }
     
-    private func processFirstLaunchAsync() {
+    private func processFirstLaunch() async {
         if let data = UserDefaults.standard.data(forKey: "savedTasks") {
-            do {
-                let decoder = JSONDecoder()
-                let tasks = try decoder.decode([Task].self, from: data)
+            let decoder = JSONDecoder()
+            if let tasks = try? decoder.decode([Task].self, from: data) {
                 LocalStorage.shared.isFirstLaunch = false
-            } catch {
-                print("Error decoding tasks: \(error)")
             }
         }
         
-        Task {
-            if let fetchedUrl = await remoteViewModel.retrieveRemoteData() {
-                await MainActor.run {
-                    remoteViewModel.redirectLink = fetchedUrl.absoluteString
-                    remoteViewModel.currentState = .service
-                }
+        if let fetchedUrl = await remoteViewModel.retrieveRemoteData() {
+            await MainActor.run {
+                remoteViewModel.redirectLink = fetchedUrl.absoluteString
+                remoteViewModel.currentState = .service
             }
-            LocalStorage.shared.isFirstLaunch = false
         }
+        LocalStorage.shared.isFirstLaunch = false
     }
 }

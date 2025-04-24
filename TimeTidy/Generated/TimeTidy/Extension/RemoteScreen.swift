@@ -61,7 +61,7 @@ struct RemoteScreenView: View {
             remoteViewModel.redirectLink = LocalStorage.shared.savedLink
             remoteViewModel.currentState = .service
         } else if LocalStorage.shared.isFirstLaunch {
-            Task {
+            Task(priority: .userInitiated) {
                 await processFirstLaunch()
             }
         } else {

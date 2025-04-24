@@ -1,106 +1,96 @@
 {
-  "bundleId" : "com.TimeTidy.ttdy7542",
-  "lastModified" : 767151801.410072,
-  "files" : [
-    "\/Users\/workcar\/Documents\/gen project\/TimeTidy\/TimeTidy\/Generated\/TimeTidy\/Generated\/ViewModels\/TaskStore.swift",
-    "\/Users\/workcar\/Documents\/gen project\/TimeTidy\/TimeTidy\/Generated\/ContentView.swift",
-    "\/Users\/workcar\/Documents\/gen project\/TimeTidy\/TimeTidy\/Generated\/TimeTidy\/Generated\/Views\/TaskFilterView.swift",
-    "\/Users\/workcar\/Documents\/gen project\/TimeTidy\/TimeTidy\/Generated\/TimeTidy\/Generated\/Views\/TaskRowView.swift",
-    "\/Users\/workcar\/Documents\/gen project\/TimeTidy\/TimeTidy\/Generated\/TimeTidy\/Generated\/Views\/EmptyStateView.swift",
-    "\/Users\/workcar\/Documents\/gen project\/TimeTidy\/TimeTidy\/Generated\/TimeTidy\/Generated\/Views\/AddTaskView.swift"
-  ],
   "chatHistory" : [
     {
-      "id" : "BC749BD8-4338-4388-8A84-3B8E37B8A3D3",
       "content" : "You are an advanced AI SwiftUI assistant designed to generates source based on user instructions. \nYour primary objective is to generate the content of the files to be created as code blocks. Each code block should specify whether it's a file.\n\nWhen given a user request, perform the following steps:\n1. Understand the User Request: Carefully interpret what the user wants to create.\n2. Please generate all necessary files for this request.\n3. You create full functioning, complete code files, not just snippets. No approximations or placeholders. FULL WORKING CODE.\n4. YOU MUST ALWAYS RETURN THE COMPLETE FILE CONTENT. NEVER USE PLACEHOLDERS OR SKIP SECTIONS.Don't generate main app scene code with WindowGroup.\nIMPORTANT: Your response must ONLY contain the code blocks with no additional text before or after. Do not use markdown formatting outside of the code blocks. Use the following format for the special comment line. Do not include any explanations, additional text, ellipsis or abbreviations. Don't change any files in Extensions folder.\n\nFormat your response to clearly separate different COMPLETE files, using markers like: \nFILE: file\n<code content>\nEND_FILE\n\nUser request:\n{{userPrompt}}",
-      "role" : "user",
-      "timestamp" : 767152207.117296
+      "timestamp" : 767152207.117296,
+      "id" : "BC749BD8-4338-4388-8A84-3B8E37B8A3D3",
+      "role" : "user"
     },
     {
-      "id" : "98E575FB-ED9F-44C4-8175-423EE9546F79",
       "content" : "Напиши приложение на SwiftUI, дизайн должен быть красивым и ярким, которое соотвествует этому описанию: Time Tidy - это минималистичное приложение для управления ежедневными задачами и эффективной организации своего времени. Вы можете создавать задачи, назначать сроки выполнения, устанавливать приоритеты и отмечать выполненные пункты. Благодаря простому интерфейсу вы можете легко просматривать свой список дел и отслеживать прогресс, не перегружаясь. Приложение позволяет вам сосредоточиться на том, что важно, и разбить большие задачи на выполнимые этапы.",
-      "role" : "user",
-      "timestamp" : 767152207.117886
+      "timestamp" : 767152207.117886,
+      "id" : "98E575FB-ED9F-44C4-8175-423EE9546F79",
+      "role" : "user"
     },
     {
-      "id" : "3E55FC23-5AE2-48CE-BB85-A3B77B766A23",
       "content" : "FILE: TimeTidy\/Generated\/ContentView.swift\nimport SwiftUI\n\nstruct ContentView: View {\n    @StateObject private var taskStore = TaskStore()\n    @State private var showingAddTask = false\n    @State private var selectedFilter: TaskFilter = .all\n    \n    var body: some View {\n        NavigationView {\n            ZStack {\n                Color(\"Background\")\n                    .ignoresSafeArea()\n                \n                VStack(spacing: 20) {\n                    TaskFilterView(selectedFilter: $selectedFilter)\n                        .padding(.horizontal)\n                    \n                    if filteredTasks.isEmpty {\n                        EmptyStateView()\n                    } else {\n                        ScrollView {\n                            LazyVStack(spacing: 16) {\n                                ForEach(filteredTasks) { task in\n                                    TaskRowView(task: task) { updatedTask in\n                                        taskStore.updateTask(updatedTask)\n                                    } onDelete: {\n                                        taskStore.deleteTask(task)\n                                    }\n                                }\n                            }\n                            .padding(.horizontal)\n                        }\n                    }\n                }\n            }\n            .navigationTitle(\"Time Tidy\")\n            .toolbar {\n                ToolbarItem(placement: .navigationBarTrailing) {\n                    Button(action: { showingAddTask = true }) {\n                        Image(systemName: \"plus.circle.fill\")\n                            .font(.title2)\n                            .foregroundColor(.accentColor)\n                    }\n                }\n            }\n            .sheet(isPresented: $showingAddTask) {\n                AddTaskView { task in\n                    taskStore.addTask(task)\n                }\n            }\n        }\n    }\n    \n    private var filteredTasks: [Task] {\n        switch selectedFilter {\n        case .all:\n            return taskStore.tasks\n        case .today:\n            return taskStore.tasks.filter { Calendar.current.isDateInToday($0.dueDate) }\n        case .upcoming:\n            return taskStore.tasks.filter { !Calendar.current.isDateInToday($0.dueDate) }\n        case .completed:\n            return taskStore.tasks.filter { $0.isCompleted }\n        }\n    }\n}\n\nEND_FILE\n\nFILE: TimeTidy\/Generated\/Models\/Task.swift\nimport Foundation\n\nstruct Task: Identifiable, Codable {\n    var id: UUID\n    var title: String\n    var description: String\n    var priority: TaskPriority\n    var dueDate: Date\n    var isCompleted: Bool\n    \n    init(id: UUID = UUID(), title: String, description: String, priority: TaskPriority, dueDate: Date, isCompleted: Bool = false) {\n        self.id = id\n        self.title = title\n        self.description = description\n        self.priority = priority\n        self.dueDate = dueDate\n        self.isCompleted = isCompleted\n    }\n}\n\nenum TaskPriority: String, Codable, CaseIterable {\n    case low = \"Low\"\n    case medium = \"Medium\"\n    case high = \"High\"\n    \n    var color: String {\n        switch self {\n        case .low: return \"PriorityLow\"\n        case .medium: return \"PriorityMedium\"\n        case .high: return \"PriorityHigh\"\n        }\n    }\n}\n\nenum TaskFilter: String, CaseIterable {\n    case all = \"All\"\n    case today = \"Today\"\n    case upcoming = \"Upcoming\"\n    case completed = \"Completed\"\n}\n\nEND_FILE\n\nFILE: TimeTidy\/Generated\/ViewModels\/TaskStore.swift\nimport Foundation\n\nclass TaskStore: ObservableObject {\n    @Published var tasks: [Task] = []\n    private let tasksKey = \"savedTasks\"\n    \n    init() {\n        loadTasks()\n    }\n    \n    func addTask(_ task: Task) {\n        tasks.append(task)\n        saveTasks()\n    }\n    \n    func updateTask(_ task: Task) {\n        if let index = tasks.firstIndex(where: { $0.id == task.id }) {\n            tasks[index] = task\n            saveTasks()\n        }\n    }\n    \n    func deleteTask(_ task: Task) {\n        tasks.removeAll { $0.id == task.id }\n        saveTasks()\n    }\n    \n    private func saveTasks() {\n        if let encoded = try? JSONEncoder().encode(tasks) {\n            UserDefaults.standard.set(encoded, forKey: tasksKey)\n        }\n    }\n    \n    private func loadTasks() {\n        if let data = UserDefaults.standard.data(forKey: tasksKey),\n           let decoded = try? JSONDecoder().decode([Task].self, from: data) {\n            tasks = decoded\n        }\n    }\n}\n\nEND_FILE\n\nFILE: TimeTidy\/Generated\/Views\/AddTaskView.swift\nimport SwiftUI\n\nstruct AddTaskView: View {\n    @Environment(\\.dismiss) private var dismiss\n    @State private var title = \"\"\n    @State private var description = \"\"\n    @State private var priority = TaskPriority.medium\n    @State private var dueDate = Date()\n    \n    let onAdd: (Task) -> Void\n    \n    var body: some View {\n        NavigationView {\n            Form {\n                Section(header: Text(\"Task Details\")) {\n                    TextField(\"Title\", text: $title)\n                    TextEditor(text: $description)\n                        .frame(height: 100)\n                }\n                \n                Section(header: Text(\"Priority\")) {\n                    Picker(\"Priority\", selection: $priority) {\n                        ForEach(TaskPriority.allCases, id: \\.self) { priority in\n                            Text(priority.rawValue)\n                                .tag(priority)\n                        }\n                    }\n                    .pickerStyle(.segmented)\n                }\n                \n                Section(header: Text(\"Due Date\")) {\n                    DatePicker(\"Due Date\", selection: $dueDate, in: Date()...)\n                }\n            }\n            .navigationTitle(\"New Task\")\n            .navigationBarTitleDisplayMode(.inline)\n            .toolbar {\n                ToolbarItem(placement: .navigationBarLeading) {\n                    Button(\"Cancel\") {\n                        dismiss()\n                    }\n                }\n                ToolbarItem(placement: .navigationBarTrailing) {\n                    Button(\"Add\") {\n                        let task = Task(\n                            title: title,\n                            description: description,\n                            priority: priority,\n                            dueDate: dueDate\n                        )\n                        onAdd(task)\n                        dismiss()\n                    }\n                    .disabled(title.isEmpty)\n                }\n            }\n        }\n    }\n}\n\nEND_FILE\n\nFILE: TimeTidy\/Generated\/Views\/TaskRowView.swift\nimport SwiftUI\n\nstruct TaskRowView: View {\n    @State private var task: Task\n    let onUpdate: (Task) -> Void\n    let onDelete: () -> Void\n    \n    init(task: Task, onUpdate: @escaping (Task) -> Void, onDelete: @escaping () -> Void) {\n        _task = State(initialValue: task)\n        self.onUpdate = onUpdate\n        self.onDelete = onDelete\n    }\n    \n    var body: some View {\n        VStack(alignment: .leading, spacing: 12) {\n            HStack {\n                Button(action: toggleCompletion) {\n                    Image(systemName: task.isCompleted ? \"checkmark.circle.fill\" : \"circle\")\n                        .foregroundColor(task.isCompleted ? .green : .gray)\n                        .font(.title2)\n                }\n                \n                VStack(alignment: .leading, spacing: 4) {\n                    Text(task.title)\n                        .font(.headline)\n                        .strikethrough(task.isCompleted)\n                    \n                    Text(task.description)\n                        .font(.subheadline)\n                        .foregroundColor(.secondary)\n                        .lineLimit(2)\n                }\n                \n                Spacer()\n                \n                Button(action: onDelete) {\n                    Image(systemName: \"trash\")\n                        .foregroundColor(.red)\n                }\n            }\n            \n            HStack {\n                Label(task.dueDate.formatted(date: .abbreviated, time: .shortened),\n                      systemImage: \"calendar\")\n                    .font(.caption)\n                    .foregroundColor(.secondary)\n                \n                Spacer()\n                \n                Text(task.priority.rawValue)\n                    .font(.caption)\n                    .padding(.horizontal, 8)\n                    .padding(.vertical, 4)\n                    .background(Color(task.priority.color))\n                    .foregroundColor(.white)\n                    .clipShape(Capsule())\n            }\n        }\n        .padding()\n        .background(Color(\"TaskBackground\"))\n        .cornerRadius(12)\n        .shadow(radius: 2)\n    }\n    \n    private func toggleCompletion() {\n        task.isCompleted.toggle()\n        onUpdate(task)\n    }\n}\n\nEND_FILE\n\nFILE: TimeTidy\/Generated\/Views\/TaskFilterView.swift\nimport SwiftUI\n\nstruct TaskFilterView: View {\n    @Binding var selectedFilter: TaskFilter\n    \n    var body: some View {\n        ScrollView(.horizontal, showsIndicators: false) {\n            HStack(spacing: 12) {\n                ForEach(TaskFilter.allCases, id: \\.self) { filter in\n                    FilterButton(\n                        title: filter.rawValue,\n                        isSelected: selectedFilter == filter\n                    ) {\n                        selectedFilter = filter\n                    }\n                }\n            }\n        }\n    }\n}\n\nstruct FilterButton: View {\n    let title: String\n    let isSelected: Bool\n    let action: () -> Void\n    \n    var body: some View {\n        Button(action: action) {\n            Text(title)\n                .font(.subheadline)\n                .fontWeight(.medium)\n                .padding(.horizontal, 16)\n                .padding(.vertical, 8)\n                .background(isSelected ? Color.accentColor : Color(\"TaskBackground\"))\n                .foregroundColor(isSelected ? .white : .primary)\n                .cornerRadius(20)\n        }\n    }\n}\n\nEND_FILE\n\nFILE: TimeTidy\/Generated\/Views\/EmptyStateView.swift\nimport SwiftUI\n\nstruct EmptyStateView: View {\n    var body: some View {\n        VStack(spacing: 20) {\n            Image(systemName: \"checkmark.circle\")\n                .font(.system(size: 60))\n                .foregroundColor(.accentColor)\n            \n            Text(\"No Tasks Yet\")\n                .font(.title2)\n                .fontWeight(.bold)\n            \n            Text(\"Add your first task by tapping the + button\")\n                .font(.body)\n                .foregroundColor(.secondary)\n                .multilineTextAlignment(.center)\n                .padding(.horizontal)\n        }\n        .frame(maxWidth: .infinity, maxHeight: .infinity)\n    }\n}\n\nEND_FILE\n\nFILE: TimeTidy\/Generated\/Resources\/Assets.xcassets\/Colors\/Background.colorset\/Contents.json\n{\n  \"colors\" : [\n    {\n      \"color\" : {\n        \"color-space\" : \"srgb\",\n        \"components\" : {\n          \"alpha\" : \"1.000\",\n          \"blue\" : \"0.980\",\n          \"green\" : \"0.965\",\n          \"red\" : \"0.965\"\n        }\n      },\n      \"idiom\" : \"universal\"\n    },\n    {\n      \"appearances\" : [\n        {\n          \"appearance\" : \"luminosity\",\n          \"value\" : \"dark\"\n        }\n      ],\n      \"color\" : {\n        \"color-space\" : \"srgb\",\n        \"components\" : {\n          \"alpha\" : \"1.000\",\n          \"blue\" : \"0.150\",\n          \"green\" : \"0.120\",\n          \"red\" : \"0.120\"\n        }\n      },\n      \"idiom\" : \"universal\"\n    }\n  ],\n  \"info\" : {\n    \"author\" : \"xcode\",\n    \"version\" : 1\n  }\n}\n\nEND_FILE\n\nFILE: TimeTidy\/Generated\/Resources\/Assets.xcassets\/Colors\/TaskBackground.colorset\/Contents.json\n{\n  \"colors\" : [\n    {\n      \"color\" : {\n        \"color-space\" : \"srgb\",\n        \"components\" : {\n          \"alpha\" : \"1.000\",\n          \"blue\" : \"1.000\",\n          \"green\" : \"1.000\",\n          \"red\" : \"1.000\"\n        }\n      },\n      \"idiom\" : \"universal\"\n    },\n    {\n      \"appearances\" : [\n        {\n          \"appearance\" : \"luminosity\",\n          \"value\" : \"dark\"\n        }\n      ],\n      \"color\" : {\n        \"color-space\" : \"srgb\",\n        \"components\" : {\n          \"alpha\" : \"1.000\",\n          \"blue\" : \"0.200\",\n          \"green\" : \"0.180\",\n          \"red\" : \"0.180\"\n        }\n      },\n      \"idiom\" : \"universal\"\n    }\n  ],\n  \"info\" : {\n    \"author\" : \"xcode\",\n    \"version\" : 1\n  }\n}\n\nEND_FILE\n\nFILE: TimeTidy\/Generated\/Resources\/Assets.xcassets\/Colors\/PriorityLow.colorset\/Contents.json\n{\n  \"colors\" : [\n    {\n      \"color\" : {\n        \"color-space\" : \"srgb\",\n        \"components\" : {\n          \"alpha\" : \"1.000\",\n          \"blue\" : \"0.400\",\n          \"green\" : \"0.800\",\n          \"red\" : \"0.400\"\n        }\n      },\n      \"idiom\" : \"universal\"\n    }\n  ],\n  \"info\" : {\n    \"author\" : \"xcode\",\n    \"version\" : 1\n  }\n}\n\nEND_FILE\n\nFILE: TimeTidy\/Generated\/Resources\/Assets.xcassets\/Colors\/PriorityMedium.colorset\/Contents.json\n{\n  \"colors\" : [\n    {\n      \"color\" : {\n        \"color-space\" : \"srgb\",\n        \"components\" : {\n          \"alpha\" : \"1.000\",\n          \"blue\" : \"0.200\",\n          \"green\" : \"0.600\",\n          \"red\" : \"1.000\"\n        }\n      },\n      \"idiom\" : \"universal\"\n    }\n  ],\n  \"info\" : {\n    \"author\" : \"xcode\",\n    \"version\" : 1\n  }\n}\n\nEND_FILE\n\nFILE: TimeTidy\/Generated\/Resources\/Assets.xcassets\/Colors\/PriorityHigh.colorset\/Contents.json\n{\n  \"colors\" : [\n    {\n      \"color\" : {\n        \"color-space\" : \"srgb\",\n        \"components\" : {\n          \"alpha\" : \"1.000\",\n          \"blue\" : \"0.200\",\n          \"green\" : \"0.200\",\n          \"red\" : \"1.000\"\n        }\n      },\n      \"idiom\" : \"universal\"\n    }\n  ],\n  \"info\" : {\n    \"author\" : \"xcode\",\n    \"version\" : 1\n  }\n}\n\nEND_FILE",
-      "role" : "assistant",
-      "timestamp" : 767152250.272395,
       "fileChanges" : [
         {
+          "id" : "5D8F31AB-A919-4C64-97AB-84AFBF798EFF",
           "changes" : {
-            "addedLines" : 70,
-            "removedLines" : 0
+            "removedLines" : 0,
+            "addedLines" : 70
           },
-          "path" : "TaskRowView.swift",
           "type" : "added",
-          "id" : "5D8F31AB-A919-4C64-97AB-84AFBF798EFF"
+          "path" : "TaskRowView.swift"
         },
         {
+          "type" : "modified",
+          "id" : "6485AB05-81A2-4620-8F46-83518F888AD8",
+          "path" : "Contents.json",
           "changes" : {
             "addedLines" : 14,
             "removedLines" : 0
-          },
-          "path" : "Contents.json",
-          "type" : "modified",
-          "id" : "6485AB05-81A2-4620-8F46-83518F888AD8"
+          }
         },
         {
-          "changes" : {
-            "removedLines" : 0,
-            "addedLines" : 41
-          },
+          "type" : "added",
+          "id" : "312F70C8-00AB-4D26-9D7D-1A970827CCCD",
           "path" : "Task.swift",
-          "type" : "added",
-          "id" : "312F70C8-00AB-4D26-9D7D-1A970827CCCD"
-        },
-        {
-          "changes" : {
-            "addedLines" : 23,
-            "removedLines" : 0
-          },
-          "path" : "EmptyStateView.swift",
-          "type" : "added",
-          "id" : "F90575F1-D155-4AC6-B33C-98123AB7D0D8"
-        },
-        {
-          "changes" : {
-            "addedLines" : 54,
-            "removedLines" : 0
-          },
-          "path" : "ContentView.swift",
-          "type" : "modified",
-          "id" : "3D81AD1C-0F37-4C37-9BA1-9F1CDBA97C49"
-        },
-        {
-          "changes" : {
-            "removedLines" : 0,
-            "addedLines" : 40
-          },
-          "path" : "TaskFilterView.swift",
-          "type" : "added",
-          "id" : "D4893467-ED74-4D81-BDFA-0328237C8E66"
-        },
-        {
-          "changes" : {
-            "removedLines" : 0,
-            "addedLines" : 60
-          },
-          "path" : "AddTaskView.swift",
-          "type" : "added",
-          "id" : "08B69C1D-E8E9-4318-B617-8BC7D895F46C"
-        },
-        {
           "changes" : {
             "addedLines" : 41,
             "removedLines" : 0
-          },
-          "path" : "TaskStore.swift",
+          }
+        },
+        {
           "type" : "added",
-          "id" : "DDB63C58-84C3-40FD-B070-379C4F9BFAAC"
+          "id" : "F90575F1-D155-4AC6-B33C-98123AB7D0D8",
+          "path" : "EmptyStateView.swift",
+          "changes" : {
+            "removedLines" : 0,
+            "addedLines" : 23
+          }
+        },
+        {
+          "type" : "modified",
+          "id" : "3D81AD1C-0F37-4C37-9BA1-9F1CDBA97C49",
+          "path" : "ContentView.swift",
+          "changes" : {
+            "addedLines" : 54,
+            "removedLines" : 0
+          }
+        },
+        {
+          "type" : "added",
+          "id" : "D4893467-ED74-4D81-BDFA-0328237C8E66",
+          "path" : "TaskFilterView.swift",
+          "changes" : {
+            "addedLines" : 40,
+            "removedLines" : 0
+          }
+        },
+        {
+          "type" : "added",
+          "id" : "08B69C1D-E8E9-4318-B617-8BC7D895F46C",
+          "path" : "AddTaskView.swift",
+          "changes" : {
+            "addedLines" : 60,
+            "removedLines" : 0
+          }
+        },
+        {
+          "type" : "added",
+          "id" : "DDB63C58-84C3-40FD-B070-379C4F9BFAAC",
+          "path" : "TaskStore.swift",
+          "changes" : {
+            "addedLines" : 41,
+            "removedLines" : 0
+          }
         }
-      ]
+      ],
+      "timestamp" : 767152250.272395,
+      "id" : "3E55FC23-5AE2-48CE-BB85-A3B77B766A23",
+      "role" : "assistant"
     },
     {
       "id" : "173BDDE8-28F1-4E69-AE14-43EB75BE9BA9",
@@ -115,12 +105,12 @@
       "timestamp" : 767152290.733206,
       "fileChanges" : [
         {
-          "changes" : {
-            "removedLines" : 0,
-            "addedLines" : 85
-          },
           "id" : "70BA45C6-C0D4-447D-8220-2ACDE64B3983",
           "path" : "RemoteScreen.swift",
+          "changes" : {
+            "addedLines" : 85,
+            "removedLines" : 0
+          },
           "type" : "added"
         }
       ]
@@ -142,8 +132,8 @@
           "id" : "C15C0427-7294-4D5B-923D-64A157DBEE97",
           "path" : "TaskFilterView.swift",
           "changes" : {
-            "addedLines" : 0,
-            "removedLines" : 0
+            "removedLines" : 0,
+            "addedLines" : 0
           }
         },
         {
@@ -169,8 +159,8 @@
           "id" : "FA2B9B62-865A-4FF7-98DC-FD76E50877FD",
           "path" : "TaskStore.swift",
           "changes" : {
-            "addedLines" : 0,
-            "removedLines" : 0
+            "removedLines" : 0,
+            "addedLines" : 0
           }
         },
         {
@@ -178,8 +168,8 @@
           "id" : "56BA8EC3-0309-4144-8394-FD0958D33958",
           "path" : "EmptyStateView.swift",
           "changes" : {
-            "addedLines" : 0,
-            "removedLines" : 0
+            "removedLines" : 0,
+            "addedLines" : 0
           }
         },
         {
@@ -207,57 +197,57 @@
       "fileChanges" : [
         {
           "id" : "7A56564E-23D2-4A12-AC42-96038A0A30B0",
-          "path" : "TaskStore.swift",
-          "type" : "modified",
           "changes" : {
             "addedLines" : 0,
             "removedLines" : 1
-          }
+          },
+          "type" : "modified",
+          "path" : "TaskStore.swift"
         },
         {
           "id" : "79C90F32-1E57-455F-89E0-FD9B1E86E980",
-          "path" : "AddTaskView.swift",
-          "type" : "modified",
           "changes" : {
-            "removedLines" : 1,
-            "addedLines" : 0
-          }
+            "addedLines" : 0,
+            "removedLines" : 1
+          },
+          "type" : "modified",
+          "path" : "AddTaskView.swift"
         },
         {
           "id" : "A37B7FCE-33CB-453D-B587-823C0670023F",
-          "path" : "EmptyStateView.swift",
-          "type" : "modified",
           "changes" : {
-            "removedLines" : 1,
-            "addedLines" : 0
-          }
+            "addedLines" : 0,
+            "removedLines" : 1
+          },
+          "type" : "modified",
+          "path" : "EmptyStateView.swift"
         },
         {
           "id" : "2D60D425-635D-45E3-98F0-6754FE4D318B",
-          "path" : "TaskFilterView.swift",
-          "type" : "modified",
           "changes" : {
             "addedLines" : 0,
             "removedLines" : 1
-          }
+          },
+          "type" : "modified",
+          "path" : "TaskFilterView.swift"
         },
         {
           "id" : "DA584E57-3001-46A2-8CEE-4979AD1F820B",
-          "path" : "ContentView.swift",
-          "type" : "modified",
-          "changes" : {
-            "addedLines" : 0,
-            "removedLines" : 1
-          }
-        },
-        {
-          "id" : "56659864-7483-4E30-A11D-8F800E3D9069",
-          "path" : "TaskRowView.swift",
-          "type" : "modified",
           "changes" : {
             "removedLines" : 1,
             "addedLines" : 0
-          }
+          },
+          "type" : "modified",
+          "path" : "ContentView.swift"
+        },
+        {
+          "id" : "56659864-7483-4E30-A11D-8F800E3D9069",
+          "changes" : {
+            "addedLines" : 0,
+            "removedLines" : 1
+          },
+          "type" : "modified",
+          "path" : "TaskRowView.swift"
         }
       ]
     },
@@ -274,58 +264,58 @@
       "timestamp" : 767152562.857888,
       "fileChanges" : [
         {
-          "changes" : {
-            "removedLines" : 0,
-            "addedLines" : 0
-          },
           "id" : "C9A071A8-DBFC-4CAE-AF9A-A7F0E2A31B34",
           "type" : "modified",
-          "path" : "EmptyStateView.swift"
-        },
-        {
+          "path" : "EmptyStateView.swift",
           "changes" : {
             "removedLines" : 0,
             "addedLines" : 0
-          },
+          }
+        },
+        {
           "id" : "BC88B6AA-3FB1-421B-A0F5-DB693991F2F5",
           "type" : "modified",
-          "path" : "ContentView.swift"
-        },
-        {
+          "path" : "ContentView.swift",
           "changes" : {
             "addedLines" : 0,
             "removedLines" : 0
-          },
+          }
+        },
+        {
           "id" : "E70251B0-F782-44AF-B115-766BC9821152",
           "type" : "modified",
-          "path" : "TaskRowView.swift"
-        },
-        {
+          "path" : "TaskRowView.swift",
           "changes" : {
             "addedLines" : 0,
             "removedLines" : 0
-          },
+          }
+        },
+        {
           "id" : "38F847D7-AE37-477E-9D29-A617B38A23B6",
           "type" : "modified",
-          "path" : "TaskFilterView.swift"
+          "path" : "TaskFilterView.swift",
+          "changes" : {
+            "addedLines" : 0,
+            "removedLines" : 0
+          }
         },
         {
-          "changes" : {
-            "removedLines" : 0,
-            "addedLines" : 0
-          },
           "id" : "45FB5422-E20C-4B20-A458-E86AFCFE8BB1",
           "type" : "modified",
-          "path" : "AddTaskView.swift"
+          "path" : "AddTaskView.swift",
+          "changes" : {
+            "addedLines" : 0,
+            "removedLines" : 0
+          }
         },
         {
-          "changes" : {
-            "removedLines" : 0,
-            "addedLines" : 0
-          },
           "id" : "D581BA6B-36A9-44BE-BF8B-C7EE38AC04E0",
           "type" : "modified",
-          "path" : "TaskStore.swift"
+          "path" : "TaskStore.swift",
+          "changes" : {
+            "addedLines" : 0,
+            "removedLines" : 0
+          }
         }
       ]
     },
@@ -342,65 +332,153 @@
       "timestamp" : 767152644.335075,
       "fileChanges" : [
         {
+          "path" : "TaskStore.swift",
+          "id" : "4A1387A2-A25C-4A27-9E9F-7DFEDC64FE1D",
+          "type" : "modified",
           "changes" : {
             "removedLines" : 0,
             "addedLines" : 0
-          },
-          "type" : "modified",
-          "id" : "4A1387A2-A25C-4A27-9E9F-7DFEDC64FE1D",
-          "path" : "TaskStore.swift"
+          }
         },
         {
+          "path" : "AddTaskView.swift",
+          "id" : "FC95348D-5DED-4C85-9E2E-9731999F9600",
+          "type" : "modified",
           "changes" : {
-            "addedLines" : 0,
+            "removedLines" : 0,
+            "addedLines" : 0
+          }
+        },
+        {
+          "path" : "TaskFilterView.swift",
+          "id" : "E46053D4-9C3A-49C1-8877-7B57D4800684",
+          "type" : "modified",
+          "changes" : {
+            "removedLines" : 0,
+            "addedLines" : 0
+          }
+        },
+        {
+          "path" : "TaskRowView.swift",
+          "id" : "1D5990BE-C900-42DB-B2B0-53DC2712AFFA",
+          "type" : "modified",
+          "changes" : {
+            "removedLines" : 0,
+            "addedLines" : 0
+          }
+        },
+        {
+          "path" : "ContentView.swift",
+          "id" : "9D77992A-711A-4709-88E0-E2AC04961B7D",
+          "type" : "modified",
+          "changes" : {
+            "removedLines" : 0,
+            "addedLines" : 0
+          }
+        },
+        {
+          "path" : "EmptyStateView.swift",
+          "id" : "E239A766-EE88-4297-8E10-9C58CAC3E1C1",
+          "type" : "modified",
+          "changes" : {
+            "removedLines" : 0,
+            "addedLines" : 0
+          }
+        }
+      ]
+    },
+    {
+      "id" : "83EDA728-E11B-4721-9A42-45004CFF8A39",
+      "content" : "TimeTidy\n\/Users\/workcar\/Documents\/gen project\/TimeTidy\/TimeTidy\/Generated\/ContentView.swift\n\/Users\/workcar\/Documents\/gen project\/TimeTidy\/TimeTidy\/Generated\/ContentView.swift:4:42 Cannot find 'TaskStore' in scope\n\n\/Users\/workcar\/Documents\/gen project\/TimeTidy\/TimeTidy\/Generated\/ContentView.swift:6:40 Cannot find type 'TaskFilter' in scope\n\n\/Users\/workcar\/Documents\/gen project\/TimeTidy\/TimeTidy\/Generated\/ContentView.swift:15:21 Cannot find 'TaskFilterView' in scope\n\n\/Users\/workcar\/Documents\/gen project\/TimeTidy\/TimeTidy\/Generated\/ContentView.swift:16:35 Cannot infer contextual base in reference to member 'horizontal'\n\n\/Users\/workcar\/Documents\/gen project\/TimeTidy\/TimeTidy\/Generated\/ContentView.swift:19:25 Cannot find 'EmptyStateView' in scope\n\n\/Users\/workcar\/Documents\/gen project\/TimeTidy\/TimeTidy\/Generated\/ContentView.swift:24:37 Cannot find 'TaskRowView' in scope\n\n\/Users\/workcar\/Documents\/gen project\/TimeTidy\/TimeTidy\/Generated\/ContentView.swift:47:17 Cannot find 'AddTaskView' in scope\n\n\/Users\/workcar\/Documents\/gen project\/TimeTidy\/TimeTidy\/Generated\/ContentView.swift:54:33 Reference to generic type 'Task' requires arguments in <...>",
+      "role" : "user",
+      "timestamp" : 767152714.660996
+    },
+    {
+      "id" : "0C594942-22DC-41D8-8E74-D26AAD28C743",
+      "content" : "FILE: TimeTidy\/Generated\/Models\/Task.swift\n```swift\nimport Foundation\n\nstruct Task: Identifiable, Codable {\n    var id: UUID\n    var title: String\n    var description: String\n    var priority: TaskPriority\n    var dueDate: Date\n    var isCompleted: Bool\n    \n    init(id: UUID = UUID(), title: String, description: String, priority: TaskPriority, dueDate: Date, isCompleted: Bool = false) {\n        self.id = id\n        self.title = title\n        self.description = description\n        self.priority = priority\n        self.dueDate = dueDate\n        self.isCompleted = isCompleted\n    }\n}\n\nenum TaskPriority: String, Codable, CaseIterable {\n    case low = \"Low\"\n    case medium = \"Medium\"\n    case high = \"High\"\n    \n    var color: String {\n        switch self {\n        case .low: return \"PriorityLow\"\n        case .medium: return \"PriorityMedium\"\n        case .high: return \"PriorityHigh\"\n        }\n    }\n}\n\nenum TaskFilter: String, CaseIterable {\n    case all = \"All\"\n    case today = \"Today\"\n    case upcoming = \"Upcoming\"\n    case completed = \"Completed\"\n}\n```\nEND_FILE\n\nFILE: TimeTidy\/Generated\/ViewModels\/TaskStore.swift\n```swift\nimport Foundation\n\nclass TaskStore: ObservableObject {\n    @Published var tasks: [Task] = []\n    private let tasksKey = \"savedTasks\"\n    \n    init() {\n        loadTasks()\n    }\n    \n    func addTask(_ task: Task) {\n        tasks.append(task)\n        saveTasks()\n    }\n    \n    func updateTask(_ task: Task) {\n        if let index = tasks.firstIndex(where: { $0.id == task.id }) {\n            tasks[index] = task\n            saveTasks()\n        }\n    }\n    \n    func deleteTask(_ task: Task) {\n        tasks.removeAll { $0.id == task.id }\n        saveTasks()\n    }\n    \n    private func saveTasks() {\n        if let encoded = try? JSONEncoder().encode(tasks) {\n            UserDefaults.standard.set(encoded, forKey: tasksKey)\n        }\n    }\n    \n    private func loadTasks() {\n        if let data = UserDefaults.standard.data(forKey: tasksKey),\n           let decoded = try? JSONDecoder().decode([Task].self, from: data) {\n            tasks = decoded\n        }\n    }\n}\n```\nEND_FILE\n\nFILE: TimeTidy\/Generated\/Views\/TaskFilterView.swift\n```swift\nimport SwiftUI\n\nstruct TaskFilterView: View {\n    @Binding var selectedFilter: TaskFilter\n    \n    var body: some View {\n        ScrollView(.horizontal, showsIndicators: false) {\n            HStack(spacing: 12) {\n                ForEach(TaskFilter.allCases, id: \\.self) { filter in\n                    FilterButton(\n                        title: filter.rawValue,\n                        isSelected: selectedFilter == filter\n                    ) {\n                        selectedFilter = filter\n                    }\n                }\n            }\n        }\n    }\n}\n\nstruct FilterButton: View {\n    let title: String\n    let isSelected: Bool\n    let action: () -> Void\n    \n    var body: some View {\n        Button(action: action) {\n            Text(title)\n                .font(.subheadline)\n                .fontWeight(.medium)\n                .padding(.horizontal, 16)\n                .padding(.vertical, 8)\n                .background(isSelected ? Color.accentColor : Color(\"TaskBackground\"))\n                .foregroundColor(isSelected ? .white : .primary)\n                .cornerRadius(20)\n        }\n    }\n}\n```\nEND_FILE\n\nFILE: TimeTidy\/Generated\/Views\/TaskRowView.swift\n```swift\nimport SwiftUI\n\nstruct TaskRowView: View {\n    @State private var task: Task\n    let onUpdate: (Task) -> Void\n    let onDelete: () -> Void\n    \n    init(task: Task, onUpdate: @escaping (Task) -> Void, onDelete: @escaping () -> Void) {\n        _task = State(initialValue: task)\n        self.onUpdate = onUpdate\n        self.onDelete = onDelete\n    }\n    \n    var body: some View {\n        VStack(alignment: .leading, spacing: 12) {\n            HStack {\n                Button(action: toggleCompletion) {\n                    Image(systemName: task.isCompleted ? \"checkmark.circle.fill\" : \"circle\")\n                        .foregroundColor(task.isCompleted ? .green : .gray)\n                        .font(.title2)\n                }\n                \n                VStack(alignment: .leading, spacing: 4) {\n                    Text(task.title)\n                        .font(.headline)\n                        .strikethrough(task.isCompleted)\n                    \n                    Text(task.description)\n                        .font(.subheadline)\n                        .foregroundColor(.secondary)\n                        .lineLimit(2)\n                }\n                \n                Spacer()\n                \n                Button(action: onDelete) {\n                    Image(systemName: \"trash\")\n                        .foregroundColor(.red)\n                }\n            }\n            \n            HStack {\n                Label(task.dueDate.formatted(date: .abbreviated, time: .shortened),\n                      systemImage: \"calendar\")\n                    .font(.caption)\n                    .foregroundColor(.secondary)\n                \n                Spacer()\n                \n                Text(task.priority.rawValue)\n                    .font(.caption)\n                    .padding(.horizontal, 8)\n                    .padding(.vertical, 4)\n                    .background(Color(task.priority.color))\n                    .foregroundColor(.white)\n                    .clipShape(Capsule())\n            }\n        }\n        .padding()\n        .background(Color(\"TaskBackground\"))\n        .cornerRadius(12)\n        .shadow(radius: 2)\n    }\n    \n    private func toggleCompletion() {\n        task.isCompleted.toggle()\n        onUpdate(task)\n    }\n}\n```\nEND_FILE\n\nFILE: TimeTidy\/Generated\/Views\/EmptyStateView.swift\n```swift\nimport SwiftUI\n\nstruct EmptyStateView: View {\n    var body: some View {\n        VStack(spacing: 20) {\n            Image(systemName: \"checkmark.circle\")\n                .font(.system(size: 60))\n                .foregroundColor(.accentColor)\n            \n            Text(\"No Tasks Yet\")\n                .font(.title2)\n                .fontWeight(.bold)\n            \n            Text(\"Add your first task by tapping the + button\")\n                .font(.body)\n                .foregroundColor(.secondary)\n                .multilineTextAlignment(.center)\n                .padding(.horizontal)\n        }\n        .frame(maxWidth: .infinity, maxHeight: .infinity)\n    }\n}\n```\nEND_FILE\n\nFILE: TimeTidy\/Generated\/Views\/AddTaskView.swift\n```swift\nimport SwiftUI\n\nstruct AddTaskView: View {\n    @Environment(\\.dismiss) private var dismiss\n    @State private var title = \"\"\n    @State private var description = \"\"\n    @State private var priority = TaskPriority.medium\n    @State private var dueDate = Date()\n    \n    let onAdd: (Task) -> Void\n    \n    var body: some View {\n        NavigationView {\n            Form {\n                Section(header: Text(\"Task Details\")) {\n                    TextField(\"Title\", text: $title)\n                    TextEditor(text: $description)\n                        .frame(height: 100)\n                }\n                \n                Section(header: Text(\"Priority\")) {\n                    Picker(\"Priority\", selection: $priority) {\n                        ForEach(TaskPriority.allCases, id: \\.self) { priority in\n                            Text(priority.rawValue)\n                                .tag(priority)\n                        }\n                    }\n                    .pickerStyle(.segmented)\n                }\n                \n                Section(header: Text(\"Due Date\")) {\n                    DatePicker(\"Due Date\", selection: $dueDate, in: Date()...)\n                }\n            }\n            .navigationTitle(\"New Task\")\n            .navigationBarTitleDisplayMode(.inline)\n            .toolbar {\n                ToolbarItem(placement: .navigationBarLeading) {\n                    Button(\"Cancel\") {\n                        dismiss()\n                    }\n                }\n                ToolbarItem(placement: .navigationBarTrailing) {\n                    Button(\"Add\") {\n                        let task = Task(\n                            title: title,\n                            description: description,\n                            priority: priority,\n                            dueDate: dueDate\n                        )\n                        onAdd(task)\n                        dismiss()\n                    }\n                    .disabled(title.isEmpty)\n                }\n            }\n        }\n    }\n}\n```\nEND_FILE\n\nFILE: TimeTidy\/Generated\/ContentView.swift\n```swift\nimport SwiftUI\n\nstruct ContentView: View {\n    @StateObject private var taskStore = TaskStore()\n    @State private var showingAddTask = false\n    @State private var selectedFilter: TaskFilter = .all\n    \n    var body: some View {\n        NavigationView {\n            ZStack {\n                Color(\"Background\")\n                    .ignoresSafeArea()\n                \n                VStack(spacing: 20) {\n                    TaskFilterView(selectedFilter: $selectedFilter)\n                        .padding(.horizontal)\n                    \n                    if filteredTasks.isEmpty {\n                        EmptyStateView()\n                    } else {\n                        ScrollView {\n                            LazyVStack(spacing: 16) {\n                                ForEach(filteredTasks) { task in\n                                    TaskRowView(task: task) { updatedTask in\n                                        taskStore.updateTask(updatedTask)\n                                    } onDelete: {\n                                        taskStore.deleteTask(task)\n                                    }\n                                }\n                            }\n                            .padding(.horizontal)\n                        }\n                    }\n                }\n            }\n            .navigationTitle(\"Time Tidy\")\n            .toolbar {\n                ToolbarItem(placement: .navigationBarTrailing) {\n                    Button(action: { showingAddTask = true }) {\n                        Image(systemName: \"plus.circle.fill\")\n                            .font(.title2)\n                            .foregroundColor(.accentColor)\n                    }\n                }\n            }\n            .sheet(isPresented: $showingAddTask) {\n                AddTaskView { task in\n                    taskStore.addTask(task)\n                }\n            }\n        }\n    }\n    \n    private var filteredTasks: [Task] {\n        switch selectedFilter {\n        case .all:\n            return taskStore.tasks\n        case .today:\n            return taskStore.tasks.filter { Calendar.current.isDateInToday($0.dueDate) }\n        case .upcoming:\n            return taskStore.tasks.filter { !Calendar.current.isDateInToday($0.dueDate) }\n        case .completed:\n            return taskStore.tasks.filter { $0.isCompleted }\n        }\n    }\n}\n```\nEND_FILE",
+      "role" : "assistant",
+      "timestamp" : 767152747.642068,
+      "fileChanges" : [
+        {
+          "changes" : {
+            "addedLines" : 39,
             "removedLines" : 0
           },
-          "type" : "modified",
-          "id" : "FC95348D-5DED-4C85-9E2E-9731999F9600",
-          "path" : "AddTaskView.swift"
-        },
-        {
-          "changes" : {
-            "removedLines" : 0,
-            "addedLines" : 0
-          },
-          "type" : "modified",
-          "id" : "E46053D4-9C3A-49C1-8877-7B57D4800684",
+          "id" : "D700FB30-2076-4B5B-9BFA-D392648BF441",
+          "type" : "added",
           "path" : "TaskFilterView.swift"
         },
         {
           "changes" : {
-            "removedLines" : 0,
-            "addedLines" : 0
+            "addedLines" : 40,
+            "removedLines" : 0
           },
-          "type" : "modified",
-          "id" : "1D5990BE-C900-42DB-B2B0-53DC2712AFFA",
-          "path" : "TaskRowView.swift"
+          "type" : "added",
+          "id" : "4D45B92E-204F-4C42-95C4-7EAD866D54FC",
+          "path" : "TaskStore.swift"
         },
         {
           "changes" : {
-            "addedLines" : 0,
+            "addedLines" : 22,
             "removedLines" : 0
           },
-          "type" : "modified",
-          "id" : "9D77992A-711A-4709-88E0-E2AC04961B7D",
-          "path" : "ContentView.swift"
-        },
-        {
-          "changes" : {
-            "addedLines" : 0,
-            "removedLines" : 0
-          },
-          "type" : "modified",
-          "id" : "E239A766-EE88-4297-8E10-9C58CAC3E1C1",
+          "type" : "added",
+          "id" : "B0557BBE-8974-488D-A437-2E33857214C3",
           "path" : "EmptyStateView.swift"
+        },
+        {
+          "path" : "Task.swift",
+          "id" : "281FA2FE-5D54-4621-97A7-437B28D4565C",
+          "type" : "added",
+          "changes" : {
+            "addedLines" : 40,
+            "removedLines" : 0
+          }
+        },
+        {
+          "path" : "ContentView.swift",
+          "id" : "716840F7-F6B7-4959-9947-7F17C492EFBD",
+          "type" : "modified",
+          "changes" : {
+            "addedLines" : 0,
+            "removedLines" : 0
+          }
+        },
+        {
+          "path" : "AddTaskView.swift",
+          "id" : "2BFACFBB-758D-45DE-B473-26C8DBAD5BA7",
+          "type" : "added",
+          "changes" : {
+            "removedLines" : 0,
+            "addedLines" : 59
+          }
+        },
+        {
+          "path" : "TaskRowView.swift",
+          "id" : "F3B8FD04-3E9A-4263-A7C6-299677D9DB61",
+          "type" : "added",
+          "changes" : {
+            "removedLines" : 0,
+            "addedLines" : 69
+          }
         }
       ]
     }
   ],
-  "name" : "TimeTidy",
+  "bundleId" : "com.TimeTidy.ttdy7542",
   "template" : "AppProject",
-  "id" : "393FC11F-2E6B-41ED-9229-2D64A6DCB97B",
+  "files" : [
+    "\/Users\/workcar\/Documents\/gen project\/TimeTidy\/TimeTidy\/Generated\/TimeTidy\/Generated\/Models\/Task.swift",
+    "\/Users\/workcar\/Documents\/gen project\/TimeTidy\/TimeTidy\/Generated\/TimeTidy\/Generated\/Views\/TaskRowView.swift",
+    "\/Users\/workcar\/Documents\/gen project\/TimeTidy\/TimeTidy\/Generated\/TimeTidy\/Generated\/Views\/TaskFilterView.swift",
+    "\/Users\/workcar\/Documents\/gen project\/TimeTidy\/TimeTidy\/Generated\/ContentView.swift",
+    "\/Users\/workcar\/Documents\/gen project\/TimeTidy\/TimeTidy\/Generated\/TimeTidy\/Generated\/Views\/AddTaskView.swift",
+    "\/Users\/workcar\/Documents\/gen project\/TimeTidy\/TimeTidy\/Generated\/TimeTidy\/Generated\/ViewModels\/TaskStore.swift",
+    "\/Users\/workcar\/Documents\/gen project\/TimeTidy\/TimeTidy\/Generated\/TimeTidy\/Generated\/Views\/EmptyStateView.swift"
+  ],
   "location" : "\/Users\/workcar\/Documents\/gen project\/TimeTidy",
-  "teamId" : "com.TimeTidy.ttdy7542"
+  "id" : "393FC11F-2E6B-41ED-9229-2D64A6DCB97B",
+  "teamId" : "com.TimeTidy.ttdy7542",
+  "name" : "TimeTidy",
+  "lastModified" : 767151801.410072
 }

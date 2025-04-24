@@ -8,6 +8,7 @@ struct ContentView: View {
     @State private var showingEditTask = false
     @State private var showingShareSheet = false
     @State private var selectedTab = 0
+    @State private var showingSuccessNotification = false
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -82,6 +83,8 @@ struct ContentView: View {
                 .sheet(isPresented: $showingAddTask) {
                     AddTaskView { item in
                         taskStore.addItem(item)
+                        selectedTab = 0
+                        showingSuccessNotification = true
                     }
                 }
                 .sheet(isPresented: $showingEditTask) {
@@ -98,6 +101,12 @@ struct ContentView: View {
                         ])
                     }
                 }
+                .overlay(
+                    NotificationBanner(
+                        isPresented: $showingSuccessNotification,
+                        message: "Task added successfully!"
+                    )
+                )
             }
             .tabItem {
                 Image(systemName: "checklist")
@@ -128,12 +137,29 @@ struct ContentView: View {
     }
 }
 
-struct ShareSheet: UIViewControllerRepresentable {
-    let items: [Any]
+struct NotificationBanner: View {
+    @Binding var isPresented: Bool
+    let message: String
     
-    func makeUIViewController(context: Context) -> UIActivityViewController {
-        UIActivityViewController(activityItems: items, applicationActivities: nil)
+    var body: some View {
+        if isPresented {
+            VStack {
+                Spacer()
+                Text(message)
+                    .foregroundColor(.white)
+                    .padding()
+                    .background(Color.green)
+                    .cornerRadius(10)
+                    .padding(.bottom, 20)
+            }
+            .transition(.move(edge: .bottom))
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    withAnimation {
+                        isPresented = false
+                    }
+                }
+            }
+        }
     }
-    
-    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }

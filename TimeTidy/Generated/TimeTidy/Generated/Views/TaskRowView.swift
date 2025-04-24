@@ -6,11 +6,13 @@ struct TaskRowView: View {
     @State private var showingShareSheet = false
     let onUpdate: (TaskItem) -> Void
     let onDelete: () -> Void
+    let onEditComplete: () -> Void
     
-    init(task: TaskItem, onUpdate: @escaping (TaskItem) -> Void, onDelete: @escaping () -> Void) {
+    init(task: TaskItem, onUpdate: @escaping (TaskItem) -> Void, onDelete: @escaping () -> Void, onEditComplete: @escaping () -> Void) {
         _item = State(initialValue: task)
         self.onUpdate = onUpdate
         self.onDelete = onDelete
+        self.onEditComplete = onEditComplete
     }
     
     var body: some View {
@@ -81,10 +83,13 @@ struct TaskRowView: View {
                 .stroke(Color.gray.opacity(0.2), lineWidth: 1)
         )
         .sheet(isPresented: $showingEditSheet) {
-            EditTaskView(task: item) { updatedTask in
-                item = updatedTask
-                onUpdate(updatedTask)
-            }
+            EditTaskView(task: item,
+                onUpdate: { updatedTask in
+                    item = updatedTask
+                    onUpdate(updatedTask)
+                },
+                onComplete: onEditComplete
+            )
         }
         .sheet(isPresented: $showingShareSheet) {
             ShareSheet(items: [

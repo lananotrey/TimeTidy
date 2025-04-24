@@ -10,10 +10,12 @@ struct EditTaskView: View {
     
     let task: TaskItem
     let onUpdate: (TaskItem) -> Void
+    let onComplete: () -> Void
     
-    init(task: TaskItem, onUpdate: @escaping (TaskItem) -> Void) {
+    init(task: TaskItem, onUpdate: @escaping (TaskItem) -> Void, onComplete: @escaping () -> Void) {
         self.task = task
         self.onUpdate = onUpdate
+        self.onComplete = onComplete
         _title = State(initialValue: task.title)
         _description = State(initialValue: task.description)
         _priority = State(initialValue: task.priority)
@@ -67,6 +69,7 @@ struct EditTaskView: View {
                             isCompleted: isCompleted
                         )
                         onUpdate(updatedTask)
+                        onComplete()
                         dismiss()
                     }
                     .disabled(title.isEmpty)

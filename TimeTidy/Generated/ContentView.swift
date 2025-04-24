@@ -9,123 +9,7 @@ struct ContentView: View {
     @State private var showingShareSheet = false
     @State private var selectedTab = 0
     @State private var showingSuccessNotification = false
-    
-    var body: some View {
-        TabView(selection: $selectedTab) {
-            NavigationView {
-                ZStack {
-                    Color(.systemBackground)
-                        .ignoresSafeArea()
-                    
-                    VStack(spacing: 20) {
-                        TaskHeaderView(
-                            totalTasks: taskStore.items.count,
-                            completedTasks: taskStore.items.filter(\.isCompleted).count
-                        )
-                        .padding(.horizontal)
-                        
-                        TaskFilterView(selectedFilter: $selectedFilter)
-                            .padding(.horizontal)
-                        
-                        if filteredItems.isEmpty {
-                            EmptyStateView()
-                                .transition(.opacity)
-                        } else {
-                            ScrollView {
-                                LazyVStack(spacing: 16) {
-                                    ForEach(filteredItems) { item in
-                                        TaskRowView(task: item,
-                                            onUpdate: { updatedItem in
-                                                taskStore.updateItem(updatedItem)
-                                            },
-                                            onDelete: {
-                                                withAnimation {
-                                                    taskStore.deleteItem(item)
-                                                }
-                                            }
-                                        )
-                                        .contextMenu {
-                                            Button(action: {
-                                                selectedTask = item
-                                                showingEditTask = true
-                                            }) {
-                                                Label("Edit", systemImage: "pencil")
-                                            }
-                                            
-                                            Button(action: {
-                                                selectedTask = item
-                                                showingShareSheet = true
-                                            }) {
-                                                Label("Share", systemImage: "square.and.arrow.up")
-                                            }
-                                            
-                                            Button(role: .destructive, action: {
-                                                taskStore.deleteItem(item)
-                                            }) {
-                                                Label("Delete", systemImage: "trash")
-                                            }
-                                        }
-                                        .transition(.scale.combined(with: .opacity))
-                                    }
-                                }
-                                .padding(.horizontal)
-                            }
-                        }
-                    }
-                }
-                .navigationTitle("Time Tidy")
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button(action: { showingAddTask = true }) {
-                            Image(systemName: "plus.circle.fill")
-                                .font(.title2)
-                                .foregroundColor(.accentColor)
-                        }
-                    }
-                }
-                .sheet(isPresented: $showingAddTask) {
-                    AddTaskView { item in
-                        withAnimation {
-                            taskStore.addItem(item)
-                            showingSuccessNotification = true
-                        }
-                    }
-                }
-                .sheet(isPresented: $showingEditTask) {
-                    if let task = selectedTask {
-                        EditTaskView(task: task) { updatedTask in
-                            taskStore.updateItem(updatedTask)
-                        }
-                    }
-                }
-                .sheet(isPresented: $showingShareSheet) {
-                    if let task = selectedTask {
-                        ShareSheet(items: [
-                            "Task: \(task.title)\nDescription: \(task.description)\nDue Date: \(task.dueDate.formatted())\nPriority: \(task.priority.rawValue)"
-                        ])
-                    }
-                }
-                .overlay(
-                    NotificationBanner(
-                        isPresented: $showingSuccessNotification,
-                        message: "Task added successfully!"
-                    )
-                )
-            }
-            .tabItem {
-                Image(systemName: "checklist")
-                Text("Tasks")
-            }
-            .tag(0)
-            
-            SettingsView()
-                .tabItem {
-                    Image(systemName: "gear")
-                    Text("Settings")
-                }
-                .tag(1)
-        }
-    }
+    @State private var notificationMessage = ""
     
     private var filteredItems: [TaskItem] {
         switch selectedFilter {
@@ -137,6 +21,129 @@ struct ContentView: View {
             return taskStore.items.filter { !Calendar.current.isDateInToday($0.dueDate) }
         case .completed:
             return taskStore.items.filter { $0.isCompleted }
+        }
+    }
+    
+    var body: some View {
+        TabView(selection: $selectedTab) {
+            mainTaskView
+                .tabItem {
+                    Image(systemName: "checklist")
+                    Text("Tasks")
+                }
+                .tag(0)
+            
+            SettingsView()
+                .tabItem {
+                    Image(systemName: "gear")
+                    Text("Settings")
+                }
+                .tag(1)
+        }
+    }
+    
+    private var mainTaskView: some View {
+        NavigationView {
+            ZStack {
+                Color(.systemBackground)
+                    .ignoresSafeArea()
+                
+                VStack(spacing: 20) {
+                    TaskHeaderView(
+                        totalTasks: taskStore.items.count,
+                        completedTasks: taskStore.items.filter(\.isCompleted).count
+                    )
+                    .padding(.horizontal)
+                    
+                    TaskFilterView(selectedFilter: $selectedFilter)
+                        .padding(.horizontal)
+                    
+                    if filteredItems.isEmpty {
+                        EmptyStateView()
+                            .transition(.opacity)
+                    } else {
+                        ScrollView {
+                            LazyVStack(spacing: 16) {
+                                ForEach(filteredItems) { item in
+                                    TaskRowView(task: item,
+                                        onUpdate: { updatedItem in
+                                            taskStore.updateItem(updatedItem)
+                                        },
+                                        onDelete: {
+                                            withAnimation {
+                                                taskStore.deleteItem(item)
+                                            }
+                                        }
+                                    )
+                                    .contextMenu {
+                                        Button(action: {
+                                            selectedTask = item
+                                            showingEditTask = true
+                                        }) {
+                                            Label("Edit", systemImage: "pencil")
+                                        }
+                                        
+                                        Button(action: {
+                                            selectedTask = item
+                                            showingShareSheet = true
+                                        }) {
+                                            Label("Share", systemImage: "square.and.arrow.up")
+                                        }
+                                        
+                                        Button(role: .destructive, action: {
+                                            taskStore.deleteItem(item)
+                                        }) {
+                                            Label("Delete", systemImage: "trash")
+                                        }
+                                    }
+                                }
+                            }
+                            .padding(.horizontal)
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Time Tidy")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: { showingAddTask = true }) {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.title2)
+                            .foregroundColor(.accentColor)
+                    }
+                }
+            }
+            .sheet(isPresented: $showingAddTask) {
+                AddTaskView { item in
+                    withAnimation {
+                        taskStore.addItem(item)
+                        notificationMessage = "Task added successfully!"
+                        showingSuccessNotification = true
+                    }
+                }
+            }
+            .sheet(isPresented: $showingEditTask) {
+                if let task = selectedTask {
+                    EditTaskView(task: task) { updatedTask in
+                        taskStore.updateItem(updatedTask)
+                        notificationMessage = "Task updated successfully!"
+                        showingSuccessNotification = true
+                    }
+                }
+            }
+            .sheet(isPresented: $showingShareSheet) {
+                if let task = selectedTask {
+                    ShareSheet(items: [
+                        "Task: \(task.title)\nDescription: \(task.description)\nDue Date: \(task.dueDate.formatted())\nPriority: \(task.priority.rawValue)"
+                    ])
+                }
+            }
+            .overlay(
+                NotificationBanner(
+                    isPresented: $showingSuccessNotification,
+                    message: notificationMessage
+                )
+            )
         }
     }
 }

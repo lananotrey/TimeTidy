@@ -10,8 +10,11 @@
 		8E4A762E2CC1937D00F4F7FC /* TimeTidyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4A75F32CC1937D00F4F7FC /* TimeTidyApp.swift */; };
 		8E4A76302CC1937D00F4F7FC /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E4A75F72CC1937D00F4F7FC /* Launch Screen.storyboard */; };
 		8E4A76322CC19D2C00F4F7FC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8E4A76312CC19D2C00F4F7FC /* GoogleService-Info.plist */; };
-		8E59FB0E2B7D08B8002EFCF9 /* Firebase in Frameworks */ = {isa = PBXBuildFile; productRef = 8E59FB0D2B7D08B8002EFCF9 /* Firebase */; };
 		8EAB57702C40226900A542D5 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 8EAB576F2C40226900A542D5 /* PrivacyInfo.xcprivacy */; };
+		F20EB1842DB9CF35007DA78E /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = F20EB1832DB9CF35007DA78E /* FirebaseCore */; };
+		F20EB1862DB9CF35007DA78E /* FirebaseInstallations in Frameworks */ = {isa = PBXBuildFile; productRef = F20EB1852DB9CF35007DA78E /* FirebaseInstallations */; };
+		F20EB1882DB9CF35007DA78E /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = F20EB1872DB9CF35007DA78E /* FirebaseMessaging */; };
+		F20EB18A2DB9CF35007DA78E /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = F20EB1892DB9CF35007DA78E /* FirebaseRemoteConfig */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,7 +23,6 @@
 		8E4A75F72CC1937D00F4F7FC /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		8E4A76312CC19D2C00F4F7FC /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		8E538E922D177FBC00CF8EE0 /* TimeTidy.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TimeTidy.entitlements; sourceTree = "<group>"; };
-		8E59FB012B7D0897002EFCF9 /* Firebase */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Firebase; sourceTree = "<group>"; };
 		8EAB576F2C40226900A542D5 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		8EFC1E472B554FD5005637B3 /* TimeTidy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TimeTidy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -35,21 +37,16 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8E59FB0E2B7D08B8002EFCF9 /* Firebase in Frameworks */,
+				F20EB1882DB9CF35007DA78E /* FirebaseMessaging in Frameworks */,
+				F20EB1842DB9CF35007DA78E /* FirebaseCore in Frameworks */,
+				F20EB1862DB9CF35007DA78E /* FirebaseInstallations in Frameworks */,
+				F20EB18A2DB9CF35007DA78E /* FirebaseRemoteConfig in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		8E59FADB2B7CFEF2002EFCF9 /* Packages */ = {
-			isa = PBXGroup;
-			children = (
-				8E59FB012B7D0897002EFCF9 /* Firebase */,
-			);
-			path = Packages;
-			sourceTree = "<group>";
-		};
 		8E59FAF42B7D0571002EFCF9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -71,7 +68,6 @@
 		8EFC1E3E2B554FD5005637B3 = {
 			isa = PBXGroup;
 			children = (
-				8E59FADB2B7CFEF2002EFCF9 /* Packages */,
 				8EA1137E2B56BFE800A03D97 /* Configuration */,
 				8EFC1E492B554FD5005637B3 /* TimeTidy */,
 				8EFC1E482B554FD5005637B3 /* Products */,
@@ -119,7 +115,10 @@
 			);
 			name = TimeTidy;
 			packageProductDependencies = (
-				8E59FB0D2B7D08B8002EFCF9 /* Firebase */,
+				F20EB1832DB9CF35007DA78E /* FirebaseCore */,
+				F20EB1852DB9CF35007DA78E /* FirebaseInstallations */,
+				F20EB1872DB9CF35007DA78E /* FirebaseMessaging */,
+				F20EB1892DB9CF35007DA78E /* FirebaseRemoteConfig */,
 			);
 			productName = TimeTidy;
 			productReference = 8EFC1E472B554FD5005637B3 /* TimeTidy.app */;
@@ -150,6 +149,7 @@
 			);
 			mainGroup = 8EFC1E3E2B554FD5005637B3;
 			packageReferences = (
+				F20EB1822DB9CF35007DA78E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			productRefGroup = 8EFC1E482B554FD5005637B3 /* Products */;
 			projectDirPath = "";
@@ -337,6 +337,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.TimeTidy.ttdy7542;
 				PRODUCT_NAME = TimeTidy;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -371,6 +374,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.TimeTidy.ttdy7542;
 				PRODUCT_NAME = TimeTidy;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFTSHIELDED = true;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -402,10 +408,37 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		F20EB1822DB9CF35007DA78E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.12.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
-		8E59FB0D2B7D08B8002EFCF9 /* Firebase */ = {
+		F20EB1832DB9CF35007DA78E /* FirebaseCore */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = Firebase;
+			package = F20EB1822DB9CF35007DA78E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		F20EB1852DB9CF35007DA78E /* FirebaseInstallations */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F20EB1822DB9CF35007DA78E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseInstallations;
+		};
+		F20EB1872DB9CF35007DA78E /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F20EB1822DB9CF35007DA78E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+		F20EB1892DB9CF35007DA78E /* FirebaseRemoteConfig */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F20EB1822DB9CF35007DA78E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseRemoteConfig;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

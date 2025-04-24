@@ -4,6 +4,9 @@ struct ContentView: View {
     @StateObject private var taskStore = TaskStore()
     @State private var showingAddTask = false
     @State private var selectedFilter: FilterType = .all
+    @State private var selectedTask: TaskItem?
+    @State private var showingEditTask = false
+    @State private var showingShareSheet = false
     @State private var selectedTab = 0
     
     var body: some View {
@@ -14,6 +17,12 @@ struct ContentView: View {
                         .ignoresSafeArea()
                     
                     VStack(spacing: 20) {
+                        TaskHeaderView(
+                            totalTasks: taskStore.items.count,
+                            completedTasks: taskStore.items.filter(\.isCompleted).count
+                        )
+                        .padding(.horizontal)
+                        
                         TaskFilterView(selectedFilter: $selectedFilter)
                             .padding(.horizontal)
                         
@@ -26,7 +35,32 @@ struct ContentView: View {
                                         TaskRowView(task: item) { updatedItem in
                                             taskStore.updateItem(updatedItem)
                                         } onDelete: {
-                                            taskStore.deleteItem(item)
+                                            if let index = taskStore.items.firstIndex(where: { $0.id == item.id }) {
+                                                withAnimation {
+                                                    taskStore.items.remove(at: index)
+                                                }
+                                            }
+                                        }
+                                        .contextMenu {
+                                            Button(action: {
+                                                selectedTask = item
+                                                showingEditTask = true
+                                            }) {
+                                                Label("Edit", systemImage: "pencil")
+                                            }
+                                            
+                                            Button(action: {
+                                                selectedTask = item
+                                                showingShareSheet = true
+                                            }) {
+                                                Label("Share", systemImage: "square.and.arrow.up")
+                                            }
+                                            
+                                            Button(role: .destructive, action: {
+                                                taskStore.deleteItem(item)
+                                            }) {
+                                                Label("Delete", systemImage: "trash")
+                                            }
                                         }
                                     }
                                 }
@@ -48,6 +82,20 @@ struct ContentView: View {
                 .sheet(isPresented: $showingAddTask) {
                     AddTaskView { item in
                         taskStore.addItem(item)
+                    }
+                }
+                .sheet(isPresented: $showingEditTask) {
+                    if let task = selectedTask {
+                        EditTaskView(task: task) { updatedTask in
+                            taskStore.updateItem(updatedTask)
+                        }
+                    }
+                }
+                .sheet(isPresented: $showingShareSheet) {
+                    if let task = selectedTask {
+                        ShareSheet(items: [
+                            "Task: \(task.title)\nDescription: \(task.description)\nDue Date: \(task.dueDate.formatted())\nPriority: \(task.priority.rawValue)"
+                        ])
                     }
                 }
             }
@@ -78,4 +126,14 @@ struct ContentView: View {
             return taskStore.items.filter { $0.isCompleted }
         }
     }
+}
+
+struct ShareSheet: UIViewControllerRepresentable {
+    let items: [Any]
+    
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: items, applicationActivities: nil)
+    }
+    
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }

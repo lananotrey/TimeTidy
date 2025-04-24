@@ -73,7 +73,7 @@ struct RemoteScreenView: View {
         if let data = UserDefaults.standard.data(forKey: "savedTasks") {
             do {
                 let decoder = JSONDecoder()
-                _ = try decoder.decode([Task].self, from: data)
+                _ = try decoder.decode([TaskTask].self, from: data)
                 LocalStorage.shared.isFirstLaunch = false
             } catch {
                 print("Error decoding tasks: \(error)")

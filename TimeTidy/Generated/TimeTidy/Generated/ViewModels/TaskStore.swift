@@ -1,40 +1,40 @@
 import Foundation
 
 class TaskStore: ObservableObject {
-    @Published var tasks: [TaskTask] = []
+    @Published var items: [TaskItem] = []
     private let tasksKey = "savedTasks"
     
     init() {
-        loadTasks()
+        loadItems()
     }
     
-    func addTask(_ task: TaskTask) {
-        tasks.append(task)
-        saveTasks()
+    func addItem(_ item: TaskItem) {
+        items.append(item)
+        saveItems()
     }
     
-    func updateTask(_ task: TaskTask) {
-        if let index = tasks.firstIndex(where: { $0.id == task.id }) {
-            tasks[index] = task
-            saveTasks()
+    func updateItem(_ item: TaskItem) {
+        if let index = items.firstIndex(where: { $0.id == item.id }) {
+            items[index] = item
+            saveItems()
         }
     }
     
-    func deleteTask(_ task: TaskTask) {
-        tasks.removeAll { $0.id == task.id }
-        saveTasks()
+    func deleteItem(_ item: TaskItem) {
+        items.removeAll { $0.id == item.id }
+        saveItems()
     }
     
-    private func saveTasks() {
-        if let encoded = try? JSONEncoder().encode(tasks) {
+    private func saveItems() {
+        if let encoded = try? JSONEncoder().encode(items) {
             UserDefaults.standard.set(encoded, forKey: tasksKey)
         }
     }
     
-    private func loadTasks() {
+    private func loadItems() {
         if let data = UserDefaults.standard.data(forKey: tasksKey),
-           let decoded = try? JSONDecoder().decode([TaskTask].self, from: data) {
-            tasks = decoded
+           let decoded = try? JSONDecoder().decode([TaskItem].self, from: data) {
+            items = decoded
         }
     }
 }

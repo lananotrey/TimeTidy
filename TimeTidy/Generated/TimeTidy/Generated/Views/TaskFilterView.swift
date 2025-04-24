@@ -1,12 +1,12 @@
 import SwiftUI
 
 struct TaskFilterView: View {
-    @Binding var selectedFilter: TaskFilter
+    @Binding var selectedFilter: FilterType
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
-                ForEach(TaskFilter.allCases, id: \.self) { filter in
+                ForEach(FilterType.allCases, id: \.self) { filter in
                     FilterButton(
                         title: filter.rawValue,
                         isSelected: selectedFilter == filter

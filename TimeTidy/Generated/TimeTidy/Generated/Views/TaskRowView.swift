@@ -1,12 +1,12 @@
 import SwiftUI
 
 struct TaskRowView: View {
-    @State private var task: TaskTask
-    let onUpdate: (TaskTask) -> Void
+    @State private var item: TaskItem
+    let onUpdate: (TaskItem) -> Void
     let onDelete: () -> Void
     
-    init(task: TaskTask, onUpdate: @escaping (TaskTask) -> Void, onDelete: @escaping () -> Void) {
-        _task = State(initialValue: task)
+    init(task: TaskItem, onUpdate: @escaping (TaskItem) -> Void, onDelete: @escaping () -> Void) {
+        _item = State(initialValue: task)
         self.onUpdate = onUpdate
         self.onDelete = onDelete
     }
@@ -15,17 +15,17 @@ struct TaskRowView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Button(action: toggleCompletion) {
-                    Image(systemName: task.isCompleted ? "checkmark.circle.fill" : "circle")
-                        .foregroundColor(task.isCompleted ? .green : .gray)
+                    Image(systemName: item.isCompleted ? "checkmark.circle.fill" : "circle")
+                        .foregroundColor(item.isCompleted ? .green : .gray)
                         .font(.title2)
                 }
                 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(task.title)
+                    Text(item.title)
                         .font(.headline)
-                        .strikethrough(task.isCompleted)
+                        .strikethrough(item.isCompleted)
                     
-                    Text(task.description)
+                    Text(item.description)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                         .lineLimit(2)
@@ -40,18 +40,18 @@ struct TaskRowView: View {
             }
             
             HStack {
-                Label(task.dueDate.formatted(date: .abbreviated, time: .shortened),
+                Label(item.dueDate.formatted(date: .abbreviated, time: .shortened),
                       systemImage: "calendar")
                     .font(.caption)
                     .foregroundColor(.secondary)
                 
                 Spacer()
                 
-                Text(task.priority.rawValue)
+                Text(item.priority.rawValue)
                     .font(.caption)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    .background(Color(task.priority.color))
+                    .background(Color(item.priority.color))
                     .foregroundColor(.white)
                     .clipShape(Capsule())
             }
@@ -63,7 +63,7 @@ struct TaskRowView: View {
     }
     
     private func toggleCompletion() {
-        task.isCompleted.toggle()
-        onUpdate(task)
+        item.isCompleted.toggle()
+        onUpdate(item)
     }
 }

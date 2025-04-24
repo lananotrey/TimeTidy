@@ -3,7 +3,7 @@ import SwiftUI
 struct ContentView: View {
     @StateObject private var taskStore = TaskStore()
     @State private var showingAddTask = false
-    @State private var selectedFilter: TaskFilter = .all
+    @State private var selectedFilter: FilterType = .all
     
     var body: some View {
         NavigationView {
@@ -15,16 +15,16 @@ struct ContentView: View {
                     TaskFilterView(selectedFilter: $selectedFilter)
                         .padding(.horizontal)
                     
-                    if filteredTasks.isEmpty {
+                    if filteredItems.isEmpty {
                         EmptyStateView()
                     } else {
                         ScrollView {
                             LazyVStack(spacing: 16) {
-                                ForEach(filteredTasks) { task in
-                                    TaskRowView(task: task) { updatedTask in
-                                        taskStore.updateTask(updatedTask)
+                                ForEach(filteredItems) { item in
+                                    TaskRowView(task: item) { updatedItem in
+                                        taskStore.updateItem(updatedItem)
                                     } onDelete: {
-                                        taskStore.deleteTask(task)
+                                        taskStore.deleteItem(item)
                                     }
                                 }
                             }
@@ -44,23 +44,23 @@ struct ContentView: View {
                 }
             }
             .sheet(isPresented: $showingAddTask) {
-                AddTaskView { task in
-                    taskStore.addTask(task)
+                AddTaskView { item in
+                    taskStore.addItem(item)
                 }
             }
         }
     }
     
-    private var filteredTasks: [TaskTask] {
+    private var filteredItems: [TaskItem] {
         switch selectedFilter {
         case .all:
-            return taskStore.tasks
+            return taskStore.items
         case .today:
-            return taskStore.tasks.filter { Calendar.current.isDateInToday($0.dueDate) }
+            return taskStore.items.filter { Calendar.current.isDateInToday($0.dueDate) }
         case .upcoming:
-            return taskStore.tasks.filter { !Calendar.current.isDateInToday($0.dueDate) }
+            return taskStore.items.filter { !Calendar.current.isDateInToday($0.dueDate) }
         case .completed:
-            return taskStore.tasks.filter { $0.isCompleted }
+            return taskStore.items.filter { $0.isCompleted }
         }
     }
 }

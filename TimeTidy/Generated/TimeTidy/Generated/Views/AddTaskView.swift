@@ -4,10 +4,10 @@ struct AddTaskView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var title = ""
     @State private var description = ""
-    @State private var priority = TaskPriority.medium
+    @State private var priority = PriorityLevel.medium
     @State private var dueDate = Date()
     
-    let onAdd: (TaskTask) -> Void
+    let onAdd: (TaskItem) -> Void
     
     var body: some View {
         NavigationView {
@@ -20,7 +20,7 @@ struct AddTaskView: View {
                 
                 Section(header: Text("Priority")) {
                     Picker("Priority", selection: $priority) {
-                        ForEach(TaskPriority.allCases, id: \.self) { priority in
+                        ForEach(PriorityLevel.allCases, id: \.self) { priority in
                             Text(priority.rawValue)
                                 .tag(priority)
                         }
@@ -42,13 +42,13 @@ struct AddTaskView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Add") {
-                        let task = TaskTask(
+                        let item = TaskItem(
                             title: title,
                             description: description,
                             priority: priority,
                             dueDate: dueDate
                         )
-                        onAdd(task)
+                        onAdd(item)
                         dismiss()
                     }
                     .disabled(title.isEmpty)

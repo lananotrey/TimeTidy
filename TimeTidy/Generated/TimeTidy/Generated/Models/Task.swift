@@ -1,14 +1,14 @@
 import Foundation
 
-struct Task: Identifiable, Codable {
+struct TaskItem: Identifiable, Codable {
     var id: UUID
     var title: String
     var description: String
-    var priority: TaskPriority
+    var priority: PriorityLevel
     var dueDate: Date
     var isCompleted: Bool
     
-    init(id: UUID = UUID(), title: String, description: String, priority: TaskPriority, dueDate: Date, isCompleted: Bool = false) {
+    init(id: UUID = UUID(), title: String, description: String, priority: PriorityLevel, dueDate: Date, isCompleted: Bool = false) {
         self.id = id
         self.title = title
         self.description = description
@@ -18,7 +18,7 @@ struct Task: Identifiable, Codable {
     }
 }
 
-enum TaskPriority: String, Codable, CaseIterable {
+enum PriorityLevel: String, Codable, CaseIterable {
     case low = "Low"
     case medium = "Medium"
     case high = "High"
@@ -32,7 +32,7 @@ enum TaskPriority: String, Codable, CaseIterable {
     }
 }
 
-enum TaskFilter: String, CaseIterable {
+enum FilterType: String, CaseIterable {
     case all = "All"
     case today = "Today"
     case upcoming = "Upcoming"

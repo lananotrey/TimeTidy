@@ -49,6 +49,13 @@ struct AddTaskView: View {
                             dueDate: dueDate
                         )
                         onAdd(item)
+                        
+                        // Clear fields
+                        title = ""
+                        description = ""
+                        priority = .medium
+                        dueDate = Date()
+                        
                         dismiss()
                     }
                     .disabled(title.isEmpty)

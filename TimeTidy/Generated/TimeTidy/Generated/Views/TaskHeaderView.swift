@@ -9,19 +9,20 @@ struct TaskHeaderView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Total Tasks")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .font(.headline)
+                        .foregroundColor(.primary)
                     Text("\(totalTasks)")
                         .font(.title)
                         .fontWeight(.bold)
+                        .foregroundColor(.primary)
                 }
                 
                 Spacer()
                 
                 VStack(alignment: .trailing, spacing: 4) {
                     Text("Completed")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .font(.headline)
+                        .foregroundColor(.primary)
                     Text("\(completedTasks)")
                         .font(.title)
                         .fontWeight(.bold)
@@ -29,13 +30,19 @@ struct TaskHeaderView: View {
                 }
             }
             .padding()
-            .background(Color("TaskBackground"))
+            .background(Color(.secondarySystemBackground))
             .cornerRadius(12)
             
             if totalTasks > 0 {
-                ProgressView(value: Double(completedTasks), total: Double(totalTasks))
-                    .tint(.green)
-                    .padding(.horizontal)
+                VStack(spacing: 8) {
+                    ProgressView(value: Double(completedTasks), total: Double(totalTasks))
+                        .tint(.green)
+                    
+                    Text("\(Int((Double(completedTasks) / Double(totalTasks)) * 100))% Complete")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .padding(.horizontal)
             }
         }
     }

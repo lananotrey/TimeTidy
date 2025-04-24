@@ -25,6 +25,7 @@ struct TaskRowView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(item.title)
                         .font(.headline)
+                        .foregroundColor(.primary)
                         .strikethrough(item.isCompleted)
                     
                     Text(item.description)
@@ -63,17 +64,22 @@ struct TaskRowView: View {
                 
                 Text(item.priority.rawValue)
                     .font(.caption)
+                    .bold()
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    .background(Color(item.priority.color))
+                    .background(priorityBackground)
                     .foregroundColor(.white)
                     .clipShape(Capsule())
             }
         }
         .padding()
-        .background(Color("TaskBackground"))
+        .background(Color(.systemBackground))
         .cornerRadius(12)
-        .shadow(radius: 2)
+        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+        )
         .sheet(isPresented: $showingEditSheet) {
             EditTaskView(task: item) { updatedTask in
                 item = updatedTask
@@ -87,8 +93,21 @@ struct TaskRowView: View {
         }
     }
     
+    private var priorityBackground: Color {
+        switch item.priority {
+        case .low:
+            return .blue
+        case .medium:
+            return .orange
+        case .high:
+            return .red
+        }
+    }
+    
     private func toggleCompletion() {
-        item.isCompleted.toggle()
-        onUpdate(item)
+        withAnimation {
+            item.isCompleted.toggle()
+            onUpdate(item)
+        }
     }
 }

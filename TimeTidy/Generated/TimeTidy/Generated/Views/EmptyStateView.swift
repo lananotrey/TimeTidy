@@ -10,6 +10,7 @@ struct EmptyStateView: View {
             Text("No Tasks Yet")
                 .font(.title2)
                 .fontWeight(.bold)
+                .foregroundColor(.primary)
             
             Text("Add your first task by tapping the + button")
                 .font(.body)
@@ -18,5 +19,6 @@ struct EmptyStateView: View {
                 .padding(.horizontal)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(.systemBackground))
     }
 }

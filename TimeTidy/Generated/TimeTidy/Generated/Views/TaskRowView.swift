@@ -81,19 +81,9 @@ struct TaskRowView: View {
             }
         }
         .sheet(isPresented: $showingShareSheet) {
-            let activityVC = UIActivityViewController(
-                activityItems: [
-                    "Task: \(item.title)\nDescription: \(item.description)\nDue Date: \(item.dueDate.formatted())\nPriority: \(item.priority.rawValue)"
-                ],
-                applicationActivities: nil
-            )
-            
-            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-               let window = windowScene.windows.first,
-               let rootVC = window.rootViewController {
-                activityVC.popoverPresentationController?.sourceView = rootVC.view
-                rootVC.present(activityVC, animated: true)
-            }
+            ShareSheet(items: [
+                "Task: \(item.title)\nDescription: \(item.description)\nDue Date: \(item.dueDate.formatted())\nPriority: \(item.priority.rawValue)"
+            ])
         }
     }
     

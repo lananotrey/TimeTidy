@@ -33,15 +33,18 @@ struct ContentView: View {
                             ScrollView {
                                 LazyVStack(spacing: 16) {
                                     ForEach(filteredItems) { item in
-                                        TaskRowView(task: item) { updatedItem in
-                                            taskStore.updateItem(updatedItem)
-                                        } onDelete: {
-                                            if let index = taskStore.items.firstIndex(where: { $0.id == item.id }) {
-                                                withAnimation {
-                                                    taskStore.items.remove(at: index)
+                                        TaskRowView(task: item,
+                                            onUpdate: { updatedItem in
+                                                taskStore.updateItem(updatedItem)
+                                            },
+                                            onDelete: {
+                                                if let index = taskStore.items.firstIndex(where: { $0.id == item.id }) {
+                                                    withAnimation {
+                                                        taskStore.items.remove(at: index)
+                                                    }
                                                 }
                                             }
-                                        }
+                                        )
                                         .contextMenu {
                                             Button(action: {
                                                 selectedTask = item
@@ -133,33 +136,6 @@ struct ContentView: View {
             return taskStore.items.filter { !Calendar.current.isDateInToday($0.dueDate) }
         case .completed:
             return taskStore.items.filter { $0.isCompleted }
-        }
-    }
-}
-
-struct NotificationBanner: View {
-    @Binding var isPresented: Bool
-    let message: String
-    
-    var body: some View {
-        if isPresented {
-            VStack {
-                Spacer()
-                Text(message)
-                    .foregroundColor(.white)
-                    .padding()
-                    .background(Color.green)
-                    .cornerRadius(10)
-                    .padding(.bottom, 20)
-            }
-            .transition(.move(edge: .bottom))
-            .onAppear {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    withAnimation {
-                        isPresented = false
-                    }
-                }
-            }
         }
     }
 }

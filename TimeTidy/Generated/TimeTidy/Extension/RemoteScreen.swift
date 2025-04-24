@@ -2,17 +2,15 @@ import SwiftUI
 import Firebase
 import WebKit
 
-struct RemoteScreenView: View {
+struct RemoteScreen: View {
     @StateObject private var remoteViewModel = RemoteViewModel()
     @Environment(\.scenePhase) private var scenePhase
     
     var body: some View {
         mainContent
             .onAppear(perform: handleOnAppear)
-            .onChange(of: scenePhase) { _, newPhase in
-                if newPhase == .active {
-                    AppRatingManager.shared.checkAndRequestReview()
-                }
+            .onReceive(NotificationCenter.default.publisher(for: UIScene.didActivateNotification)) { _ in
+                AppRatingManager.shared.checkAndRequestReview()
             }
     }
     
@@ -57,29 +55,23 @@ struct RemoteScreenView: View {
     
     private func handleOnAppear() {
         AppRatingManager.shared.checkAndRequestReview()
-        if !LocalStorage.shared.savedLink.isEmpty {
-            remoteViewModel.redirectLink = LocalStorage.shared.savedLink
-            remoteViewModel.currentState = .service
-        } else if LocalStorage.shared.isFirstLaunch {
-            Task {
+        Task {
+            if !LocalStorage.shared.savedLink.isEmpty {
+                await MainActor.run {
+                    remoteViewModel.redirectLink = LocalStorage.shared.savedLink
+                    remoteViewModel.currentState = .service
+                }
+            } else if LocalStorage.shared.isFirstLaunch {
                 await processFirstLaunch()
+            } else {
+                await MainActor.run {
+                    remoteViewModel.currentState = .main
+                }
             }
-        } else {
-            remoteViewModel.currentState = .main
         }
     }
     
     private func processFirstLaunch() async {
-        if let data = UserDefaults.standard.data(forKey: "savedTasks") {
-            do {
-                let decoder = JSONDecoder()
-                _ = try decoder.decode([TaskTask].self, from: data)
-                LocalStorage.shared.isFirstLaunch = false
-            } catch {
-                print("Error decoding tasks: \(error)")
-            }
-        }
-        
         if let fetchedUrl = await remoteViewModel.retrieveRemoteData() {
             await MainActor.run {
                 remoteViewModel.redirectLink = fetchedUrl.absoluteString

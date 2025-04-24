@@ -27,8 +27,18 @@
 		8EFC1E472B554FD5005637B3 /* TimeTidy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TimeTidy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		F20EB1B62DB9D5C7007DA78E /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				RemoteScreen.swift,
+			);
+			target = 8EFC1E462B554FD5005637B3 /* TimeTidy */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		8EB200342CD2E45F00B5001F /* Extension */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Extension; sourceTree = "<group>"; };
+		8EB200342CD2E45F00B5001F /* Extension */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (F20EB1B62DB9D5C7007DA78E /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Extension; sourceTree = "<group>"; };
 		8EB2004D2CD2F12500B5001F /* Generated */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Generated; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 

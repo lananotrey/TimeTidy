@@ -8,7 +8,8 @@ struct TimeTidyApp: App {
     
     var body: some Scene {
         WindowGroup {
-            RemoteScreen()
+            RemoteScreenView()
         }
     }
 }
+

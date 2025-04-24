@@ -2,7 +2,7 @@ import SwiftUI
 import Firebase
 import WebKit
 
-struct RemoteScreen: View {
+struct RemoteScreenView: View {
     @StateObject private var remoteViewModel = RemoteViewModel()
     @Environment(\.scenePhase) private var scenePhase
     

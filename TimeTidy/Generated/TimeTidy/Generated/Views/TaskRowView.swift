@@ -2,6 +2,8 @@ import SwiftUI
 
 struct TaskRowView: View {
     @State private var item: TaskItem
+    @State private var showingEditSheet = false
+    @State private var showingShareSheet = false
     let onUpdate: (TaskItem) -> Void
     let onDelete: () -> Void
     
@@ -33,9 +35,21 @@ struct TaskRowView: View {
                 
                 Spacer()
                 
-                Button(action: onDelete) {
-                    Image(systemName: "trash")
-                        .foregroundColor(.red)
+                HStack(spacing: 16) {
+                    Button(action: { showingShareSheet = true }) {
+                        Image(systemName: "square.and.arrow.up")
+                            .foregroundColor(.blue)
+                    }
+                    
+                    Button(action: { showingEditSheet = true }) {
+                        Image(systemName: "pencil")
+                            .foregroundColor(.blue)
+                    }
+                    
+                    Button(action: onDelete) {
+                        Image(systemName: "trash")
+                            .foregroundColor(.red)
+                    }
                 }
             }
             
@@ -60,10 +74,32 @@ struct TaskRowView: View {
         .background(Color("TaskBackground"))
         .cornerRadius(12)
         .shadow(radius: 2)
+        .sheet(isPresented: $showingEditSheet) {
+            EditTaskView(task: item) { updatedTask in
+                item = updatedTask
+                onUpdate(updatedTask)
+            }
+        }
+        .sheet(isPresented: $showingShareSheet) {
+            ShareSheet(items: [
+                "Task: \(item.title)\nDescription: \(item.description)\nDue Date: \(item.dueDate.formatted())\nPriority: \(item.priority.rawValue)"
+            ])
+        }
     }
     
     private func toggleCompletion() {
         item.isCompleted.toggle()
         onUpdate(item)
     }
+}
+
+struct ShareSheet: UIViewControllerRepresentable {
+    let items: [Any]
+    
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        let controller = UIActivityViewController(activityItems: items, applicationActivities: nil)
+        return controller
+    }
+    
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }

@@ -57,28 +57,22 @@ struct RemoteScreenView: View {
     
     private func handleOnAppear() {
         AppRatingManager.shared.checkAndRequestReview()
-        Task {
-            if !LocalStorage.shared.savedLink.isEmpty {
-                await MainActor.run {
-                    remoteViewModel.redirectLink = LocalStorage.shared.savedLink
-                    remoteViewModel.currentState = .service
-                }
-            } else if LocalStorage.shared.isFirstLaunch {
+        if !LocalStorage.shared.savedLink.isEmpty {
+            remoteViewModel.redirectLink = LocalStorage.shared.savedLink
+            remoteViewModel.currentState = .service
+        } else if LocalStorage.shared.isFirstLaunch {
+            Task {
                 await processFirstLaunch()
-            } else {
-                await MainActor.run {
-                    remoteViewModel.currentState = .main
-                }
             }
+        } else {
+            remoteViewModel.currentState = .main
         }
     }
     
     private func processFirstLaunch() async {
         if let fetchedUrl = await remoteViewModel.retrieveRemoteData() {
-            await MainActor.run {
-                remoteViewModel.redirectLink = fetchedUrl.absoluteString
-                remoteViewModel.currentState = .service
-            }
+            remoteViewModel.redirectLink = fetchedUrl.absoluteString
+            remoteViewModel.currentState = .service
         }
         LocalStorage.shared.isFirstLaunch = false
     }

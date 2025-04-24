@@ -43,6 +43,8 @@ struct ContentView: View {
                                             onDelete: {
                                                 withAnimation {
                                                     taskStore.deleteItem(item)
+                                                    notificationMessage = "Task deleted successfully!"
+                                                    showingSuccessNotification = true
                                                 }
                                             },
                                             onEditComplete: {
@@ -67,6 +69,8 @@ struct ContentView: View {
                                             
                                             Button(role: .destructive, action: {
                                                 taskStore.deleteItem(item)
+                                                notificationMessage = "Task deleted successfully!"
+                                                showingSuccessNotification = true
                                             }) {
                                                 Label("Delete", systemImage: "trash")
                                             }

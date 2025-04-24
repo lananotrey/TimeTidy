@@ -7,7 +7,7 @@ struct AddTaskView: View {
     @State private var priority = TaskPriority.medium
     @State private var dueDate = Date()
     
-    let onAdd: (Task) -> Void
+    let onAdd: (TaskTask) -> Void
     
     var body: some View {
         NavigationView {
@@ -42,7 +42,7 @@ struct AddTaskView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Add") {
-                        let task = Task(
+                        let task = TaskTask(
                             title: title,
                             description: description,
                             priority: priority,

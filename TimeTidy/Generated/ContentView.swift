@@ -51,7 +51,7 @@ struct ContentView: View {
         }
     }
     
-    private var filteredTasks: [Task] {
+    private var filteredTasks: [TaskTask] {
         switch selectedFilter {
         case .all:
             return taskStore.tasks

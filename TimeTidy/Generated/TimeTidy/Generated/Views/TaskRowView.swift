@@ -1,11 +1,11 @@
 import SwiftUI
 
 struct TaskRowView: View {
-    @State private var task: Task
-    let onUpdate: (Task) -> Void
+    @State private var task: TaskTask
+    let onUpdate: (TaskTask) -> Void
     let onDelete: () -> Void
     
-    init(task: Task, onUpdate: @escaping (Task) -> Void, onDelete: @escaping () -> Void) {
+    init(task: TaskTask, onUpdate: @escaping (TaskTask) -> Void, onDelete: @escaping () -> Void) {
         _task = State(initialValue: task)
         self.onUpdate = onUpdate
         self.onDelete = onDelete

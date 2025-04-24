@@ -71,9 +71,12 @@ struct RemoteScreenView: View {
     
     private func processFirstLaunch() async {
         if let data = UserDefaults.standard.data(forKey: "savedTasks") {
-            let decoder = JSONDecoder()
-            if let tasks = try? decoder.decode([Task].self, from: data) {
+            do {
+                let decoder = JSONDecoder()
+                _ = try decoder.decode([Task].self, from: data)
                 LocalStorage.shared.isFirstLaunch = false
+            } catch {
+                print("Error decoding tasks: \(error)")
             }
         }
         

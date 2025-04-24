@@ -9,7 +9,7 @@ struct RemoteScreenView: View {
     var body: some View {
         mainContent
             .onAppear(perform: handleOnAppear)
-            .onChange(of: scenePhase) { newPhase in
+            .onChange(of: scenePhase) { _, newPhase in
                 if newPhase == .active {
                     AppRatingManager.shared.checkAndRequestReview()
                 }
@@ -61,21 +61,21 @@ struct RemoteScreenView: View {
             remoteViewModel.redirectLink = LocalStorage.shared.savedLink
             remoteViewModel.currentState = .service
         } else if LocalStorage.shared.isFirstLaunch {
-            Task(priority: .userInitiated) {
-                await processFirstLaunch()
-            }
+            processFirstLaunchAsync()
         } else {
             remoteViewModel.currentState = .main
         }
     }
     
-    private func processFirstLaunch() async {
-        if let fetchedUrl = await remoteViewModel.retrieveRemoteData() {
-            await MainActor.run {
-                remoteViewModel.redirectLink = fetchedUrl.absoluteString
-                remoteViewModel.currentState = .service
+    private func processFirstLaunchAsync() {
+        Task {
+            if let fetchedUrl = await remoteViewModel.retrieveRemoteData() {
+                await MainActor.run {
+                    remoteViewModel.redirectLink = fetchedUrl.absoluteString
+                    remoteViewModel.currentState = .service
+                }
             }
+            LocalStorage.shared.isFirstLaunch = false
         }
-        LocalStorage.shared.isFirstLaunch = false
     }
 }

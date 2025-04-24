@@ -71,8 +71,10 @@ struct RemoteScreenView: View {
     
     private func processFirstLaunch() async {
         if let fetchedUrl = await remoteViewModel.retrieveRemoteData() {
-            remoteViewModel.redirectLink = fetchedUrl.absoluteString
-            remoteViewModel.currentState = .service
+            await MainActor.run {
+                remoteViewModel.redirectLink = fetchedUrl.absoluteString
+                remoteViewModel.currentState = .service
+            }
         }
         LocalStorage.shared.isFirstLaunch = false
     }
